@@ -27,11 +27,11 @@ jobs:
       - name: Install
         run: pnpm install --frozen-lockfile
 
+      - name: Build packages (must precede typecheck — web imports built .d.ts)
+        run: pnpm --filter "./packages/*" build
+
       - name: Typecheck (all workspaces)
         run: pnpm -r typecheck
-
-      - name: Build packages
-        run: pnpm --filter "./packages/*" build
 
       - name: Test packages
         run: pnpm --filter "./packages/*" test
