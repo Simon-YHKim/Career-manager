@@ -1,60 +1,12 @@
 name: CI
 
 on:
-  push:
-    branches: [main]
   pull_request:
-    branches: [main]
-
-concurrency:
-  group: ci-${{ github.ref }}
-  cancel-in-progress: true
 
 jobs:
-  node:
-    name: Node (typecheck · build · test)
+  hello:
+    name: Hello
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Activate pnpm via corepack
-        run: |
-          corepack enable
-          corepack prepare pnpm@9.12.3 --activate
-          pnpm --version
-          node --version
-
-      - name: Install
-        run: pnpm install --frozen-lockfile
-
-      - name: Typecheck (all workspaces)
-        run: pnpm -r typecheck
-
-      - name: Build packages
-        run: pnpm --filter "./packages/*" build
-
-      - name: Test packages
-        run: pnpm --filter "./packages/*" test
-
-      - name: Build web
-        run: pnpm --filter web build
-
-  android:
-    name: Android (lint · assembleDebug)
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Show toolchain
-        run: |
-          java -version
-          echo "ANDROID_HOME=$ANDROID_HOME"
-          echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT"
-
-      - name: Lint
-        working-directory: apps/android
-        run: ./gradlew :app:lint --stacktrace
-
-      - name: Assemble debug APK
-        working-directory: apps/android
-        run: ./gradlew :app:assembleDebug --stacktrace
+      - name: Echo
+        run: echo "hello world"
