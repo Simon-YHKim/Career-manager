@@ -21,7 +21,7 @@ supabase/
 ## Prerequisites
 
 - Node.js ≥ 20
-- pnpm ≥ 9 (`corepack enable && corepack prepare pnpm@9.12.3 --activate`)
+- pnpm ≥ 10 (`corepack enable && corepack prepare pnpm@10.33.2 --activate`)
 - JDK 17 (Android 빌드)
 - Android SDK API 35 (`ANDROID_HOME` 설정 필요, 로컬 Android 빌드 시)
 
