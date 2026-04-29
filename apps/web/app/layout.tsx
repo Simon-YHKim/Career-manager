@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { pretendard } from "./fonts";
 import "./globals.css";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
@@ -42,8 +43,8 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="ko">
-      <body>{children}</body>
+    <html lang="ko" className={pretendard.variable}>
+      <body className={pretendard.className}>{children}</body>
     </html>
   );
 }
