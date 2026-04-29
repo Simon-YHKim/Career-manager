@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { categories, stageLabels, stageSlug } from "@/lib/stages-config";
 import { stages } from "@career/design-tokens";
+import { AuthMenu } from "@/components/AuthMenu";
 
 /**
  * Top navigation. Categories laid out horizontally on desktop, stacked
@@ -48,14 +49,7 @@ export function AppHeader() {
           ))}
         </nav>
 
-        <button
-          type="button"
-          aria-label="로그인 (S2 연동 예정)"
-          disabled
-          className="cursor-not-allowed rounded-md border border-black/10 px-3 py-1.5 text-xs font-medium text-stage-resume-700 opacity-60"
-        >
-          로그인 · S2
-        </button>
+        <AuthMenu />
       </div>
     </header>
   );
