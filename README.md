@@ -57,6 +57,15 @@ pnpm -r test
 
 랜딩 페이지(Web)와 첫 화면(Android)이 동일한 12-stage 색상 카드를 렌더하면 토큰 동기화가 정상입니다.
 
+전체 verification 명령 표 → [CLAUDE.md → Verification commands](./CLAUDE.md#verification-commands).
+
+## Troubleshooting
+
+- **`pnpm -r typecheck` 가 실패**한다 → fresh clone에서는 `pnpm --filter "./packages/*" build` 를 먼저 실행해야 합니다. `apps/web` 가 `@career/schema` · `@career/design-tokens` 의 `dist/*.d.ts` 를 import 하기 때문.
+- **pnpm 버전이 9.x** 로 잡힌다 → `corepack enable && corepack prepare pnpm@10.33.2 --activate`. `package.json` 의 `packageManager` 필드가 source of truth.
+- **Android Gradle 첫 빌드가 5-8분** 걸립니다. 이후 빌드는 캐시 덕에 2분 이내. CI 도 동일.
+- **Tailwind v4 + shadcn/ui** — shadcn CLI 는 사용하지 않습니다. 컴포넌트는 `apps/web/components/` 에 직접 작성.
+
 ## Out of scope (다음 스프린트)
 
 - OAuth (S2-S3): Google / Apple / Kakao / Naver / LinkedIn / Email Magic Link
