@@ -1,0 +1,70 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Pages deploy needs id-token (OIDC) + pages write. Default GITHUB_TOKEN is
+# read-only via the repo permission policy in ci.yml — declare what we need
+# here explicitly.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Only one Pages deploy in flight at a time. Cancel an older in-progress
+# deploy if a newer push lands.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build static export
+    runs-on: ubuntu-latest
+    steps:
+      # actions/checkout@v4.3.1
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+
+      - name: Activate pnpm via corepack
+        run: |
+          corepack enable
+          corepack prepare pnpm@10.33.2 --activate
+          pnpm --version
+          node --version
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Build packages (web imports built .d.ts)
+        run: pnpm --filter "./packages/*" build
+
+      - name: Build web (static export)
+        env:
+          # GitHub Pages serves project sites at /<repo>/ — basePath keeps
+          # links + assets correct. NEXT_PUBLIC_SITE_URL feeds metadataBase
+          # + sitemap.xml.
+          NEXT_BASE_PATH: /${{ github.event.repository.name }}
+          NEXT_PUBLIC_SITE_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
+        run: pnpm --filter web build
+
+      - name: Disable Jekyll (so files starting with `_` are served)
+        run: touch apps/web/out/.nojekyll
+
+      # actions/upload-pages-artifact@v3.0.1
+      - uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa
+        with:
+          path: apps/web/out
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      # actions/deploy-pages@v4.0.5
+      - id: deployment
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac1b1bbf056
