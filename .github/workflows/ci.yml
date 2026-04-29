@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [main]
 
+# Least privilege — neither job needs more than read access to the repo.
+permissions:
+  contents: read
+
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
@@ -14,8 +18,11 @@ jobs:
   node:
     name: Node (typecheck · build · test)
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
-      - uses: actions/checkout@v4
+      # actions/checkout@v4.3.1
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
 
       - name: Activate pnpm via corepack
         run: |
@@ -42,15 +49,20 @@ jobs:
   android:
     name: Android (lint · assembleDebug)
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
-      - uses: actions/checkout@v4
+      # actions/checkout@v4.3.1
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
 
-      - uses: actions/setup-java@v4
+      # actions/setup-java@v4.8.0
+      - uses: actions/setup-java@c1e323688fd81a25caa38c78aa6df2d33d3e20d9
         with:
           distribution: temurin
           java-version: 17
 
-      - uses: android-actions/setup-android@v3
+      # android-actions/setup-android@v3.2.2
+      - uses: android-actions/setup-android@9fc6c4e9069bf8d3d10b2204b1fb8f6ef7065407
 
       - name: Lint
         working-directory: apps/android
