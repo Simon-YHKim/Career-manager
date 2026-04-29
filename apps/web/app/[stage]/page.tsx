@@ -4,15 +4,23 @@ import { stageBySlug, stageLabels, stageSlug, stageTagline } from "@/lib/stages-
 import { StagePage } from "@/components/StagePage";
 
 /**
- * Quick-access stages get their own dedicated pages (apps/web/app/todo,
- * apps/web/app/blog). Excluding from the dynamic route keeps Next.js's
- * static-route precedence clean and avoids generating duplicate pages.
+ * Stages with their own dedicated pages — excluded from the dynamic
+ * route so Next.js static-route precedence stays clean and we don't
+ * generate duplicate pages.
+ *
+ *   todo · blog       → quick-access pages (stub-with-mock-data)
+ *   profile · experience → foundation forms (S2-ready scaffolds)
  */
-const QUICK_ACCESS_SLUGS = new Set([stageSlug.todo, stageSlug.blog]);
+const DEDICATED_SLUGS = new Set<string>([
+  stageSlug.todo,
+  stageSlug.blog,
+  stageSlug.profile,
+  stageSlug.experience,
+]);
 
 export function generateStaticParams() {
   return Object.values(stageSlug)
-    .filter((slug) => !QUICK_ACCESS_SLUGS.has(slug))
+    .filter((slug) => !DEDICATED_SLUGS.has(slug))
     .map((slug) => ({ stage: slug }));
 }
 
