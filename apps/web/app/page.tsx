@@ -1,82 +1,13 @@
+import Link from "next/link";
 import { stages, stageLabels, type StageKey, type Shade } from "@career/design-tokens";
-
-type QuickAccessDef = {
-  stageKey: StageKey;
-  title: string;
-  tagline: string;
-  description: string;
-};
-
-const quickAccess: readonly QuickAccessDef[] = [
-  {
-    stageKey: "todo",
-    title: "할 일",
-    tagline: "채용 일정 + 취업 준비 리마인더",
-    description:
-      "지원한 공고의 마감·면접·결과 발표 일정을 한 곳에서. 캘린더 · 리마인더 · 알람으로 놓치지 않게 관리합니다.",
-  },
-  {
-    stageKey: "blog",
-    title: "블로그",
-    tagline: "취업에 도움되는 글",
-    description:
-      "이력서 · 자소서 · 면접 · 협상까지 — 실전 사례와 가이드를 읽으며 다음 단계를 준비합니다.",
-  },
-];
-
-type CategoryDef = {
-  id: string;
-  title: string;
-  subtitle: string;
-  description: string;
-  /** Stage whose 5-shade palette is reused as the category's hue. */
-  anchor: StageKey;
-  /** Stages in journey order — earliest first, deepest shade last. */
-  stages: readonly StageKey[];
-};
-
-const categories: readonly CategoryDef[] = [
-  {
-    id: "foundation",
-    title: "기반",
-    subtitle: "Foundation",
-    description: "자기 자신을 정리하는 단계 — 커리어 프로필 · 경험 정리 · 누적 메모리.",
-    anchor: "experience",
-    stages: ["profile", "experience", "memory"],
-  },
-  {
-    id: "artifacts",
-    title: "자료",
-    subtitle: "Artifacts",
-    description: "지원에 사용하는 문서들 — 이력서부터 포트폴리오까지.",
-    anchor: "career",
-    stages: ["resume", "career", "essay", "portfolio"],
-  },
-  {
-    id: "interview",
-    title: "면접",
-    subtitle: "Interview",
-    description: "코칭 → 평가 → 협상까지, 면접 사이클 전체.",
-    anchor: "interviewCoaching",
-    stages: ["interviewCoaching", "interviewEvaluation", "salary"],
-  },
-];
-
-/**
- * Map "i-th stage of N within a category" to a shade. Lighter to darker.
- * Constrained to N ∈ {2, 3, 4} which covers the current 12-stage taxonomy.
- */
-const SHADE_RAMP: Record<2 | 3 | 4, readonly Shade[]> = {
-  2: ["500", "900"],
-  3: ["100", "500", "900"],
-  4: ["100", "500", "700", "900"],
-};
-
-const GRID_CLASSES: Record<2 | 3 | 4, string> = {
-  2: "grid-cols-2",
-  3: "grid-cols-1 sm:grid-cols-3",
-  4: "grid-cols-2 lg:grid-cols-4",
-};
+import {
+  categories,
+  GRID_CLASSES,
+  quickAccess,
+  SHADE_RAMP,
+  stageSlug,
+  type QuickAccessDef,
+} from "@/lib/stages-config";
 
 function CategoryCard({
   stageKey,
@@ -91,8 +22,9 @@ function CategoryCard({
   const label = stageLabels[stageKey];
   const isLight = shade === "50" || shade === "100";
   return (
-    <div
-      className="flex h-28 flex-col justify-between rounded-xl border border-black/10 p-4"
+    <Link
+      href={`/${stageSlug[stageKey]}`}
+      className="flex h-28 flex-col justify-between rounded-xl border border-black/10 p-4 transition hover:border-black/30 motion-reduce:transition-none"
       style={{
         backgroundColor: palette[shade],
         color: isLight ? palette["900"] : palette["50"],
@@ -105,15 +37,15 @@ function CategoryCard({
         <p className="text-base font-semibold leading-tight">{label.ko}</p>
         <p className="text-[11px] opacity-70">{label.en}</p>
       </div>
-    </div>
+    </Link>
   );
 }
 
 function QuickAccessCard({ def }: { def: QuickAccessDef }) {
   const palette = stages[def.stageKey];
   return (
-    <a
-      href={`#${def.stageKey}`}
+    <Link
+      href={`/${stageSlug[def.stageKey]}`}
       className="group flex h-full flex-col gap-3 rounded-2xl border border-black/10 bg-white p-5 transition hover:border-black/30 motion-reduce:transition-none"
     >
       <div className="flex items-baseline justify-between gap-3">
@@ -141,7 +73,7 @@ function QuickAccessCard({ def }: { def: QuickAccessDef }) {
         style={{ backgroundColor: palette["500"] }}
         aria-hidden="true"
       />
-    </a>
+    </Link>
   );
 }
 
@@ -191,7 +123,6 @@ export default function Home() {
             </p>
             <div className={`grid gap-3 ${GRID_CLASSES[n]}`}>
               {cat.stages.map((stageKey, i) => {
-                // ramp.length === cat.stages.length by construction → safe index.
                 const shade = ramp[i] ?? "500";
                 return (
                   <CategoryCard
