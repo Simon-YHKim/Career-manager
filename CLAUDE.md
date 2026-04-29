@@ -28,3 +28,24 @@ Sprint 1 has scaffolded the foundation. Future sprints add features non-destruct
 - OAuth providers: Google + Apple + Email Magic Link first; Kakao/Naver/LinkedIn in S3
 - RLS policies on the tables created in `0001_init.sql`
 - Onboarding flow that produces a `CareerProfileMinimal` row
+
+## Working method — SimonK-stack skills
+
+This repo vendors [SimonK-stack](https://github.com/Simon-YHKim/SimonK-stack) under
+`.claude/` (skills, hooks, instincts seed). The `SessionStart` hook activates on
+every Claude Code session — see `.claude/skills/INDEX.md` for the full skill catalog.
+
+Default method, in priority order:
+
+1. **Plan first.** For any non-trivial change, draft a plan (or invoke `simon-research`
+   when external knowledge is needed) before editing.
+2. **TDD when applicable** — `simon-tdd` for new features and bug fixes.
+3. **Verify before declaring done** — invoke `/qa` (Gstack) or run the project's
+   typecheck + tests + build locally.
+4. **Record mistakes** — when the user says "이거 또 틀렸어" or similar,
+   `simon-instincts` writes to `.claude/instincts/*.md` so the next session avoids it.
+5. **Security gate before any deploy** — `security-orchestrator` (RLS / IDOR /
+   paid-API / infra / adversarial review) before merging Auth, payment, or RLS work.
+
+Triggers and full algorithms: `.claude/skills/<skill-name>/SKILL.md`.
+
