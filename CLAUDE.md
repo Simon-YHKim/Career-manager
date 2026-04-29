@@ -22,9 +22,58 @@ Sprint 1 has scaffolded the foundation. Future sprints add features non-destruct
 - Supabase migrations are append-only. Do not edit `0001_init.sql` after merge — write a new migration.
 - Branch convention: feature work goes to `claude/<topic>-<id>` and is opened as draft PR.
 
+## Verification commands
+
+These are the commands Claude (and human devs) can run autonomously to verify
+work without asking the user. Per Boris Cherny's verification-loop principle.
+
+| Purpose | Command | Notes |
+|---|---|---|
+| Install deps | `pnpm install` | uses pnpm 10 via corepack |
+| Build packages | `pnpm --filter "./packages/*" build` | must run before typecheck — web imports built `.d.ts` |
+| Typecheck all | `pnpm -r typecheck` | requires packages built first |
+| Run all tests | `pnpm -r test` | Vitest (contrast.test, document.test) |
+| Build web | `pnpm --filter web build` | Next.js production build |
+| Web dev server | `pnpm --filter web dev` | Turbopack, http://localhost:3000 |
+| Lint web | `pnpm --filter web lint` | ESLint via `next lint` |
+| Android lint | `cd apps/android && ./gradlew :app:lint` | requires JDK 17 + Android SDK 35 |
+| Android debug build | `cd apps/android && ./gradlew :app:assembleDebug` | first run ~5-8 min, cached <2 min |
+| DB migration apply | `psql -f supabase/migrations/0001_init.sql` | requires local Postgres; pgvector deferred to S24 |
+
+**One-shot full check** (mirrors CI):
+
+```bash
+pnpm install --frozen-lockfile && \
+  pnpm --filter "./packages/*" build && \
+  pnpm -r typecheck && \
+  pnpm --filter "./packages/*" test && \
+  pnpm --filter web build
+```
+
 ## What's next (S2)
 
 - Supabase Auth client wiring (Web + Android)
 - OAuth providers: Google + Apple + Email Magic Link first; Kakao/Naver/LinkedIn in S3
 - RLS policies on the tables created in `0001_init.sql`
 - Onboarding flow that produces a `CareerProfileMinimal` row
+
+## Working method — SimonK-stack skills
+
+This repo vendors [SimonK-stack](https://github.com/Simon-YHKim/SimonK-stack) under
+`.claude/` (skills, hooks, instincts seed). The `SessionStart` hook activates on
+every Claude Code session — see `.claude/skills/INDEX.md` for the full skill catalog.
+
+Default method, in priority order:
+
+1. **Plan first.** For any non-trivial change, draft a plan (or invoke `simon-research`
+   when external knowledge is needed) before editing.
+2. **TDD when applicable** — `simon-tdd` for new features and bug fixes.
+3. **Verify before declaring done** — invoke `/qa` (Gstack) or run the project's
+   typecheck + tests + build locally.
+4. **Record mistakes** — when the user says "이거 또 틀렸어" or similar,
+   `simon-instincts` writes to `.claude/instincts/*.md` so the next session avoids it.
+5. **Security gate before any deploy** — `security-orchestrator` (RLS / IDOR /
+   paid-API / infra / adversarial review) before merging Auth, payment, or RLS work.
+
+Triggers and full algorithms: `.claude/skills/<skill-name>/SKILL.md`.
+
