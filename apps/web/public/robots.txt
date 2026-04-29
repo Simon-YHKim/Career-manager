@@ -1,0 +1,6 @@
+# Career Manager — pre-launch
+# Disallow all until public launch (planned post-S5).
+User-agent: *
+Disallow: /
+
+Sitemap: /sitemap.xml
