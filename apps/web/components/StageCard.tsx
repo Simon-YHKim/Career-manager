@@ -31,7 +31,7 @@ export function StageCard({ stageKey }: Props) {
             className="flex h-10 flex-1 items-center justify-center text-[10px]"
             style={{
               backgroundColor: palette[shade],
-              color: shade === "50" || shade === "100" ? "#0b0f17" : "#ffffff",
+              color: shade === "50" || shade === "100" ? palette["900"] : palette["50"],
             }}
           >
             {shade}
