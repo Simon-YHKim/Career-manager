@@ -20,6 +20,9 @@ const DEDICATED_SLUGS = new Set<string>([
   stageSlug.career,
   stageSlug.essay,
   stageSlug.portfolio,
+  stageSlug.interviewCoaching,
+  stageSlug.interviewEvaluation,
+  stageSlug.salary,
 ]);
 
 export function generateStaticParams() {
