@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { pretendard } from "./fonts";
 import { AppHeader } from "@/components/AppHeader";
+import { ToastProvider } from "@/components/ui";
 import "./globals.css";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
@@ -46,8 +47,10 @@ export default function RootLayout({
   return (
     <html lang="ko" className={pretendard.variable}>
       <body className={pretendard.className}>
-        <AppHeader />
-        {children}
+        <ToastProvider>
+          <AppHeader />
+          {children}
+        </ToastProvider>
       </body>
     </html>
   );
