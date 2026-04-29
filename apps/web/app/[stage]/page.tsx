@@ -16,6 +16,10 @@ const DEDICATED_SLUGS = new Set<string>([
   stageSlug.blog,
   stageSlug.profile,
   stageSlug.experience,
+  stageSlug.resume,
+  stageSlug.career,
+  stageSlug.essay,
+  stageSlug.portfolio,
 ]);
 
 export function generateStaticParams() {
