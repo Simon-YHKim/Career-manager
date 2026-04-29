@@ -1,5 +1,29 @@
 import { stages, stageLabels, type StageKey, type Shade } from "@career/design-tokens";
 
+type QuickAccessDef = {
+  stageKey: StageKey;
+  title: string;
+  tagline: string;
+  description: string;
+};
+
+const quickAccess: readonly QuickAccessDef[] = [
+  {
+    stageKey: "todo",
+    title: "할 일",
+    tagline: "채용 일정 + 취업 준비 리마인더",
+    description:
+      "지원한 공고의 마감·면접·결과 발표 일정을 한 곳에서. 캘린더 · 리마인더 · 알람으로 놓치지 않게 관리합니다.",
+  },
+  {
+    stageKey: "blog",
+    title: "블로그",
+    tagline: "취업에 도움되는 글",
+    description:
+      "이력서 · 자소서 · 면접 · 협상까지 — 실전 사례와 가이드를 읽으며 다음 단계를 준비합니다.",
+  },
+];
+
 type CategoryDef = {
   id: string;
   title: string;
@@ -32,17 +56,9 @@ const categories: readonly CategoryDef[] = [
     id: "interview",
     title: "면접",
     subtitle: "Interview",
-    description: "면접 단계 — 코칭과 평가.",
+    description: "코칭 → 평가 → 협상까지, 면접 사이클 전체.",
     anchor: "interviewCoaching",
-    stages: ["interviewCoaching", "interviewEvaluation"],
-  },
-  {
-    id: "decision",
-    title: "결정",
-    subtitle: "Decision",
-    description: "협상 · 실행 · 외부 발신.",
-    anchor: "salary",
-    stages: ["salary", "todo", "blog"],
+    stages: ["interviewCoaching", "interviewEvaluation", "salary"],
   },
 ];
 
@@ -93,10 +109,46 @@ function CategoryCard({
   );
 }
 
+function QuickAccessCard({ def }: { def: QuickAccessDef }) {
+  const palette = stages[def.stageKey];
+  return (
+    <a
+      href={`#${def.stageKey}`}
+      className="group flex h-full flex-col gap-3 rounded-2xl border border-black/10 bg-white p-5 transition hover:border-black/30 motion-reduce:transition-none"
+    >
+      <div className="flex items-baseline justify-between gap-3">
+        <h3
+          className="text-lg font-semibold tracking-tight"
+          style={{ color: palette["900"] }}
+        >
+          {def.title}
+        </h3>
+        <span
+          className="rounded-full px-2 py-0.5 font-mono text-[10px] uppercase tracking-widest"
+          style={{
+            backgroundColor: palette["100"],
+            color: palette["900"],
+          }}
+        >
+          {def.tagline}
+        </span>
+      </div>
+      <p className="text-sm leading-relaxed text-stage-resume-700">
+        {def.description}
+      </p>
+      <div
+        className="mt-auto h-1 w-full rounded-full"
+        style={{ backgroundColor: palette["500"] }}
+        aria-hidden="true"
+      />
+    </a>
+  );
+}
+
 export default function Home() {
   return (
     <main className="mx-auto max-w-6xl px-6 py-12">
-      <header className="mb-12">
+      <header className="mb-10">
         <p className="mb-2 font-mono text-xs uppercase tracking-widest text-stage-resume-700">
           Sprint 1 · Foundation
         </p>
@@ -104,18 +156,25 @@ export default function Home() {
           Career Manager
         </h1>
         <p className="mt-3 max-w-2xl text-sm leading-relaxed text-stage-resume-700 sm:text-base">
-          한국·영미권 통합 커리어 플랫폼. 12 stage 디자인 토큰을
-          사용자 여정 4 대분류로 묶고, 카테고리별 hue 통일 + 진행순
-          progressive shade 로 표현했습니다.
+          한국·영미권 통합 커리어 플랫폼. 빠른 접근 두 기능을 위에,
+          사용자 여정을 3 단계로 묶어 정리했습니다.
         </p>
       </header>
+
+      <section className="mb-12" aria-label="Quick access">
+        <div className="grid gap-4 sm:grid-cols-2">
+          {quickAccess.map((qa) => (
+            <QuickAccessCard key={qa.stageKey} def={qa} />
+          ))}
+        </div>
+      </section>
 
       {categories.map((cat) => {
         const n = cat.stages.length as 2 | 3 | 4;
         const ramp = SHADE_RAMP[n];
         const accent = stages[cat.anchor]["700"];
         return (
-          <section key={cat.id} className="mb-10">
+          <section key={cat.id} id={cat.id} className="mb-10">
             <header className="mb-4 flex items-baseline gap-3">
               <h2 className="text-xl font-semibold tracking-tight">
                 {cat.title}
