@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pretendard } from "./fonts";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -10,8 +11,8 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="ko">
-      <body>{children}</body>
+    <html lang="ko" className={pretendard.variable}>
+      <body className={pretendard.className}>{children}</body>
     </html>
   );
 }

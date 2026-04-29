@@ -14,10 +14,11 @@ const config: Config = {
       },
       fontFamily: {
         sans: [
+          "var(--font-pretendard)",
+          "Pretendard",
           "ui-sans-serif",
           "system-ui",
           "-apple-system",
-          "Pretendard",
           "Apple SD Gothic Neo",
           "Segoe UI",
           "sans-serif",
