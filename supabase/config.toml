@@ -1,0 +1,37 @@
+# Supabase project configuration. Project ref will be set in CI/local env;
+# do not commit credentials. Run `supabase link --project-ref <ref>` to bind.
+
+project_id = "career-manager"
+
+[db]
+port = 54322
+shadow_port = 54320
+major_version = 15
+
+[studio]
+enabled = true
+port = 54323
+
+[auth]
+enabled = true
+site_url = "http://localhost:3000"
+additional_redirect_urls = ["http://localhost:3000/auth/callback"]
+jwt_expiry = 3600
+refresh_token_rotation_enabled = true
+refresh_token_reuse_interval = 10
+
+[auth.external.google]
+enabled = false
+
+[auth.external.apple]
+enabled = false
+
+[auth.external.kakao]
+enabled = false
+
+[auth.external.linkedin]
+enabled = false
+
+[storage]
+enabled = true
+file_size_limit = "50MiB"
