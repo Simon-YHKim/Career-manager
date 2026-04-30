@@ -48,6 +48,12 @@ export function MarketingLanding() {
             로그인
           </button>
           <Link
+            href="/?demo=1"
+            className="rounded-md border border-stage-resume-100 bg-white px-5 py-2.5 text-sm font-medium text-stage-resume-900 hover:border-stage-resume-700"
+          >
+            데모로 둘러보기
+          </Link>
+          <Link
             href="/help"
             className="self-center font-mono text-[11px] uppercase tracking-widest text-stage-resume-700 underline-offset-4 hover:underline hover:text-stage-resume-900"
           >
