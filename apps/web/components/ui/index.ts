@@ -11,3 +11,4 @@ export { Tag, type TagProps } from "./Tag";
 export { Card, type CardProps } from "./Card";
 export { Skeleton } from "./Skeleton";
 export { ToastProvider, useToast } from "./Toast";
+export { Modal } from "./Modal";
