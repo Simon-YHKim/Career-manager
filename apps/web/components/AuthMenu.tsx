@@ -1,60 +1,66 @@
 "use client";
 
-import Link from "next/link";
+import { useState } from "react";
 import { useAuth } from "@/lib/auth-context";
 import { Skeleton } from "@/components/ui";
+import { AuthModal } from "@/components/AuthModal";
 
 /**
- * Auth widget rendered top-right by AppHeader. Has 4 visual states:
- *  - loading       → skeleton (env set, session check in flight)
- *  - unconfigured  → "로그인 · S2" disabled stub (no env vars)
- *  - anonymous     → "로그인" link to /auth/signin
- *  - authenticated → email + 로그아웃
+ * Top-right auth widget. 4 visual states:
+ *  - loading        → skeleton
+ *  - unconfigured   → 로그인/회원가입 buttons (open AuthModal which shows S2 stub)
+ *  - anonymous      → 로그인/회원가입 buttons (open AuthModal)
+ *  - authenticated  → email + 로그아웃
+ *
+ * Modal state lives here — anywhere can open it via this widget.
  */
 export function AuthMenu() {
   const { state, signOut } = useAuth();
+  const [open, setOpen] = useState<"signin" | "signup" | null>(null);
 
   if (state.status === "loading") {
-    return <Skeleton variant="block" className="h-8 w-20 rounded-md" />;
+    return <Skeleton variant="block" className="h-8 w-32 rounded-md" />;
   }
 
-  if (state.status === "unconfigured") {
+  if (state.status === "authenticated") {
     return (
-      <button
-        type="button"
-        aria-label="로그인 (S2 wiring 대기)"
-        disabled
-        className="cursor-not-allowed rounded-md border border-black/10 px-3 py-1.5 text-xs font-medium text-stage-resume-700 opacity-60"
-      >
-        로그인 · S2
-      </button>
+      <div className="flex items-center gap-2">
+        <span className="font-mono text-[11px] text-stage-resume-700">
+          {state.user.email}
+        </span>
+        <button
+          type="button"
+          onClick={() => void signOut()}
+          className="rounded-md border border-stage-resume-100 bg-white px-3 py-1.5 text-xs font-medium text-stage-resume-900 hover:border-stage-resume-700"
+        >
+          로그아웃
+        </button>
+      </div>
     );
   }
 
-  if (state.status === "anonymous") {
-    return (
-      <Link
-        href="/auth/signin"
+  // anonymous OR unconfigured — modal handles the env-missing message itself.
+  return (
+    <div className="flex items-center gap-2">
+      <button
+        type="button"
+        onClick={() => setOpen("signin")}
         className="rounded-md border border-stage-resume-100 bg-white px-3 py-1.5 text-xs font-medium text-stage-resume-900 hover:border-stage-resume-700"
       >
         로그인
-      </Link>
-    );
-  }
-
-  // authenticated
-  return (
-    <div className="flex items-center gap-2">
-      <span className="font-mono text-[11px] text-stage-resume-700">
-        {state.user.email}
-      </span>
+      </button>
       <button
         type="button"
-        onClick={() => void signOut()}
-        className="rounded-md border border-stage-resume-100 bg-white px-3 py-1.5 text-xs font-medium text-stage-resume-900 hover:border-stage-resume-700"
+        onClick={() => setOpen("signup")}
+        className="rounded-md bg-stage-resume-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-stage-resume-700"
       >
-        로그아웃
+        회원가입
       </button>
+      <AuthModal
+        open={open !== null}
+        onClose={() => setOpen(null)}
+        initialTab={open ?? "signin"}
+      />
     </div>
   );
 }
