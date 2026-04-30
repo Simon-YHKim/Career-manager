@@ -38,12 +38,13 @@ const STATUS_TO_PHASE: Record<Application["status"], Phase> = {
  * viewport without scrolling (md: layout). On mobile it stacks naturally.
  *
  * Composition:
- *   ┌─ 4 quick buttons (Q&A · 블로그 · 리멤버 · LinkedIn) ─┐
+ *   ┌─ (optional) demo banner ─┐
+ *   ├─ 4 quick buttons (Q&A · 블로그 · 리멤버 · LinkedIn) ─┤
  *   ├─ Left: D-day list (click → inline app checklist)  | Right: Calendar
  *   ├─ Left: 내 할 일 (개인 task)                         |
  *   └─ Bottom: 3 category links (기반 · 자료 · 면접)
  */
-export function Dashboard() {
+export function Dashboard({ demo = false }: { demo?: boolean }) {
   const top3Apps = useMemo(
     () =>
       [...MOCK_APPS]
@@ -79,6 +80,7 @@ export function Dashboard() {
 
   return (
     <main className="mx-auto flex max-w-6xl flex-col gap-4 px-6 py-4">
+      {demo && <DemoBanner />}
       <QuickButtons />
 
       <section className="grid gap-4 md:grid-cols-[1fr_1.4fr]">
@@ -127,6 +129,27 @@ export function Dashboard() {
       <div id="artifacts" />
       <div id="interview" />
     </main>
+  );
+}
+
+function DemoBanner() {
+  return (
+    <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-stage-resume-100 bg-stage-resume-50 px-4 py-2 text-xs text-stage-resume-700">
+      <span>
+        <span className="font-mono uppercase tracking-widest text-stage-resume-500">
+          demo
+        </span>
+        <span className="ml-2">
+          비로그인 미리보기 · 모든 데이터는 mock. 로그인 시 본인 데이터로 전환됩니다.
+        </span>
+      </span>
+      <Link
+        href="/"
+        className="font-mono text-[11px] uppercase tracking-widest text-stage-resume-700 underline-offset-4 hover:underline hover:text-stage-resume-900"
+      >
+        ↗ 데모 종료
+      </Link>
+    </div>
   );
 }
 

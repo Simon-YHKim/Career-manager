@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useAuth } from "@/lib/auth-context";
 import { Skeleton } from "@/components/ui";
 import { AuthModal } from "@/components/AuthModal";
@@ -8,7 +9,7 @@ import { AuthModal } from "@/components/AuthModal";
 /**
  * Top-right auth widget. 4 visual states:
  *  - loading        → skeleton
- *  - unconfigured   → 로그인/회원가입 buttons (open AuthModal which shows S2 stub)
+ *  - unconfigured   → 로그인/회원가입 link to /?demo=1 (fake-login preview)
  *  - anonymous      → 로그인/회원가입 buttons (open AuthModal)
  *  - authenticated  → email + 로그아웃
  *
@@ -39,7 +40,27 @@ export function AuthMenu() {
     );
   }
 
-  // anonymous OR unconfigured — modal handles the env-missing message itself.
+  // unconfigured — Supabase env not set yet. Pretend login → demo dashboard.
+  if (state.status === "unconfigured") {
+    return (
+      <div className="flex items-center gap-2">
+        <Link
+          href="/?demo=1"
+          className="rounded-md border border-stage-resume-100 bg-white px-3 py-1.5 text-xs font-medium text-stage-resume-900 hover:border-stage-resume-700"
+        >
+          로그인
+        </Link>
+        <Link
+          href="/?demo=1"
+          className="rounded-md bg-stage-resume-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-stage-resume-700"
+        >
+          회원가입
+        </Link>
+      </div>
+    );
+  }
+
+  // anonymous — Supabase configured, normal modal flow.
   return (
     <div className="flex items-center gap-2">
       <button

@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { AuthModal } from "@/components/AuthModal";
+import { isAuthConfigured } from "@/lib/supabase";
 
 /**
  * Public marketing landing — shown to visitors who haven't logged in.
@@ -11,9 +13,23 @@ import { AuthModal } from "@/components/AuthModal";
  *
  * Tone: 단정한 한국어, 한 화면 안에 정리. AI Slop 3원칙 준수
  * (이모지 X · 모노톤 · 레퍼런스 일관).
+ *
+ * When Supabase env is *unconfigured* (= GitHub Pages preview pre-S2),
+ * the 로그인 / 회원가입 buttons short-circuit to the demo dashboard
+ * instead of opening AuthModal — so a sharable URL works end-to-end.
  */
 export function MarketingLanding() {
+  const router = useRouter();
   const [open, setOpen] = useState<"signin" | "signup" | null>(null);
+  const configured = isAuthConfigured();
+
+  function handleAuthClick(tab: "signin" | "signup") {
+    if (configured) {
+      setOpen(tab);
+    } else {
+      router.push("/?demo=1");
+    }
+  }
 
   return (
     <main className="mx-auto flex min-h-[calc(100dvh-65px)] max-w-5xl flex-col px-6 py-10">
@@ -35,18 +51,26 @@ export function MarketingLanding() {
         <div className="mt-6 flex flex-wrap gap-3">
           <button
             type="button"
-            onClick={() => setOpen("signup")}
+            onClick={() => handleAuthClick("signup")}
             className="rounded-md bg-stage-resume-900 px-5 py-2.5 text-sm font-medium text-white hover:bg-stage-resume-700"
           >
             무료로 시작하기
           </button>
           <button
             type="button"
-            onClick={() => setOpen("signin")}
+            onClick={() => handleAuthClick("signin")}
             className="rounded-md border border-stage-resume-100 bg-white px-5 py-2.5 text-sm font-medium text-stage-resume-900 hover:border-stage-resume-700"
           >
             로그인
           </button>
+          {configured && (
+            <Link
+              href="/?demo=1"
+              className="rounded-md border border-stage-resume-100 bg-white px-5 py-2.5 text-sm font-medium text-stage-resume-900 hover:border-stage-resume-700"
+            >
+              데모로 둘러보기
+            </Link>
+          )}
           <Link
             href="/help"
             className="self-center font-mono text-[11px] uppercase tracking-widest text-stage-resume-700 underline-offset-4 hover:underline hover:text-stage-resume-900"
