@@ -67,7 +67,7 @@ export default function ResumePage() {
           <Card key={r.id} interactive href="#" className="space-y-2">
             <div className="flex flex-wrap items-baseline justify-between gap-2">
               <p className="text-base font-semibold leading-tight">{r.target}</p>
-              <Tag stage="career">{statusLabel[r.status]}</Tag>
+              <Tag>{statusLabel[r.status]}</Tag>
             </div>
             <p className="font-mono text-[11px] text-stage-resume-700">
               마지막 수정 {r.updated} · {r.pages} 페이지

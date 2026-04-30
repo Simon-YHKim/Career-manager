@@ -39,9 +39,33 @@ Tailwind: `text-3xl/10` → 30/40, `text-2xl/8` → 24/32 등 기본값 활용. 
 
 ## Color system
 
-### Source of truth
+### Policy (v2 · 2026-04-29 · monotone-first)
 
-`packages/design-tokens/src/stages.ts` — **12 stages × 5 shades** (50/100/500/700/900) = 60 colors. Okabe-Ito 기반 (색맹 안전).
+**원칙**: UI 는 단색조 (monotone). 12-stage 색상은 데이터 토큰으로만 존재하고, **표면 (surface) 에서 hue 사용을 금지**한다. 카테고리 구분은 라벨 · 위치 · 타이포그래피로만.
+
+**허용된 의미 색상 (semantic) — 최소한으로만**:
+- **danger / 마감 임박**: `palette.salary.s700` (어두운 amber) — D-day ≤ 3 일 등 긴급 상태
+- **success / 완료**: `palette.career.s700` (어두운 green) — 체크리스트 완료, 제출 완료
+- **info**: `palette.interviewCoaching.s700` — 안내성 알림
+
+위 셋 외에는 **stage palette 색을 표면에 칠하지 않는다**. 카테고리별 색 구분 (이전 v1 정책) 폐기.
+
+### Neutral (모노톤) 토큰
+
+UI 가 사용하는 표면 색은 `palette.resume` (회색-블랙 톤) 만:
+
+| 용도 | 토큰 | hex |
+|---|---|---|
+| bg paper | `palette.resume.s50` | `#ECEFF1` |
+| bg card | `#FFFFFF` (예외 허용 — 카드만) |  |
+| border | `palette.resume.s100` | `#CFD8DC` |
+| text secondary | `palette.resume.s500` | `#5D6D7E` |
+| text body | `palette.resume.s700` | `#37474F` |
+| text emphasis · primary CTA bg | `palette.resume.s900` | `#102027` |
+
+### Source of truth (12-stage 토큰 자체)
+
+`packages/design-tokens/src/stages.ts` — 12 stages × 5 shades. Okabe-Ito 기반 (색맹 안전). 토큰 파일 자체는 유지 — 데이터 분류, Android sync invariant, 향후 차트·시각화 등 의미 색상 필요 시 재사용.
 
 12 stages (each maps to a UX surface — derived from `DocumentType`):
 - `profile` · `experience` · `career` · `essay` · `resume` · `portfolio`

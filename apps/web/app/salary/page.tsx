@@ -2,7 +2,6 @@
 
 import { useToast, Button, Card, Tag } from "@/components/ui";
 import { StageHero } from "@/components/StageHero";
-import { stages } from "@career/design-tokens";
 
 type Negotiation = {
   id: string;
@@ -79,7 +78,6 @@ function fmtKrw(amount: number): string {
 }
 
 function MarketBar({ row }: { row: MarketRow }) {
-  const palette = stages.salary;
   const range = row.bandHigh - row.bandLow;
   const medianPos = ((row.median - row.bandLow) / range) * 100;
   return (
@@ -90,10 +88,10 @@ function MarketBar({ row }: { row: MarketRow }) {
           {fmtKrw(row.bandLow)} – {fmtKrw(row.bandHigh)} · 중간값 {fmtKrw(row.median)}
         </p>
       </div>
-      <div className="relative h-2 w-full rounded-full" style={{ backgroundColor: palette["100"] }}>
+      <div className="relative h-2 w-full rounded-full bg-stage-resume-100">
         <div
-          className="absolute top-0 h-2 w-px"
-          style={{ left: `${medianPos}%`, backgroundColor: palette["900"] }}
+          className="absolute top-0 h-2 w-px bg-stage-resume-900"
+          style={{ left: `${medianPos}%` }}
           aria-hidden="true"
         />
       </div>
@@ -141,7 +139,7 @@ export default function SalaryPage() {
           <Card key={n.id} interactive href="#" className="space-y-3">
             <div className="flex flex-wrap items-baseline justify-between gap-2">
               <p className="text-base font-semibold leading-tight">{n.company}</p>
-              <Tag stage="salary">{statusLabel[n.status]}</Tag>
+              <Tag>{statusLabel[n.status]}</Tag>
             </div>
             <div className="grid grid-cols-3 gap-2 text-sm">
               <div>

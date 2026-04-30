@@ -1,78 +1,50 @@
 import Link from "next/link";
-import { stages, stageLabels, type StageKey, type Shade } from "@career/design-tokens";
+import { stageLabels, type StageKey } from "@career/design-tokens";
 import {
   categories,
   GRID_CLASSES,
   quickAccess,
-  SHADE_RAMP,
   stageSlug,
   type QuickAccessDef,
 } from "@/lib/stages-config";
 
-function CategoryCard({
-  stageKey,
-  anchor,
-  shade,
-}: {
-  stageKey: StageKey;
-  anchor: StageKey;
-  shade: Shade;
-}) {
-  const palette = stages[anchor];
+function CategoryCard({ stageKey }: { stageKey: StageKey }) {
   const label = stageLabels[stageKey];
-  const isLight = shade === "50" || shade === "100";
   return (
     <Link
       href={`/${stageSlug[stageKey]}`}
-      className="flex h-28 flex-col justify-between rounded-xl border border-black/10 p-4 transition hover:border-black/30 motion-reduce:transition-none"
-      style={{
-        backgroundColor: palette[shade],
-        color: isLight ? palette["900"] : palette["50"],
-      }}
+      className="flex h-28 flex-col justify-between rounded-xl border border-stage-resume-100 bg-white p-4 transition-colors hover:border-stage-resume-700 motion-reduce:transition-none"
     >
-      <p className="font-mono text-[10px] uppercase tracking-widest opacity-70">
+      <p className="font-mono text-[10px] uppercase tracking-widest text-stage-resume-500">
         {stageKey}
       </p>
       <div>
-        <p className="text-base font-semibold leading-tight">{label.ko}</p>
-        <p className="text-[11px] opacity-70">{label.en}</p>
+        <p className="text-base font-semibold leading-tight text-stage-resume-900">
+          {label.ko}
+        </p>
+        <p className="text-[11px] text-stage-resume-700">{label.en}</p>
       </div>
     </Link>
   );
 }
 
 function QuickAccessCard({ def }: { def: QuickAccessDef }) {
-  const palette = stages[def.stageKey];
   return (
     <Link
       href={`/${stageSlug[def.stageKey]}`}
-      className="group flex h-full flex-col gap-3 rounded-2xl border border-black/10 bg-white p-5 transition hover:border-black/30 motion-reduce:transition-none"
+      className="group flex h-full flex-col gap-3 rounded-2xl border border-stage-resume-100 bg-white p-5 transition-colors hover:border-stage-resume-700 motion-reduce:transition-none"
     >
       <div className="flex items-baseline justify-between gap-3">
-        <h3
-          className="text-lg font-semibold tracking-tight"
-          style={{ color: palette["900"] }}
-        >
+        <h3 className="text-lg font-semibold tracking-tight text-stage-resume-900">
           {def.title}
         </h3>
-        <span
-          className="rounded-full px-2 py-0.5 font-mono text-[10px] uppercase tracking-widest"
-          style={{
-            backgroundColor: palette["100"],
-            color: palette["900"],
-          }}
-        >
+        <span className="rounded-full border border-stage-resume-100 px-2 py-0.5 font-mono text-[10px] uppercase tracking-widest text-stage-resume-700">
           {def.tagline}
         </span>
       </div>
       <p className="text-sm leading-relaxed text-stage-resume-700">
         {def.description}
       </p>
-      <div
-        className="mt-auto h-1 w-full rounded-full"
-        style={{ backgroundColor: palette["500"] }}
-        aria-hidden="true"
-      />
     </Link>
   );
 }
@@ -103,18 +75,13 @@ export default function Home() {
 
       {categories.map((cat) => {
         const n = cat.stages.length as 2 | 3 | 4;
-        const ramp = SHADE_RAMP[n];
-        const accent = stages[cat.anchor]["700"];
         return (
           <section key={cat.id} id={cat.id} className="mb-10">
             <header className="mb-4 flex items-baseline gap-3">
-              <h2 className="text-xl font-semibold tracking-tight">
+              <h2 className="text-xl font-semibold tracking-tight text-stage-resume-900">
                 {cat.title}
               </h2>
-              <span
-                className="font-mono text-[11px] uppercase tracking-widest"
-                style={{ color: accent }}
-              >
+              <span className="font-mono text-[11px] uppercase tracking-widest text-stage-resume-500">
                 {cat.subtitle}
               </span>
             </header>
@@ -122,23 +89,15 @@ export default function Home() {
               {cat.description}
             </p>
             <div className={`grid gap-3 ${GRID_CLASSES[n]}`}>
-              {cat.stages.map((stageKey, i) => {
-                const shade = ramp[i] ?? "500";
-                return (
-                  <CategoryCard
-                    key={stageKey}
-                    stageKey={stageKey}
-                    anchor={cat.anchor}
-                    shade={shade}
-                  />
-                );
-              })}
+              {cat.stages.map((stageKey) => (
+                <CategoryCard key={stageKey} stageKey={stageKey} />
+              ))}
             </div>
           </section>
         );
       })}
 
-      <footer className="mt-16 border-t border-black/10 pt-6 font-mono text-xs uppercase tracking-widest text-stage-resume-700">
+      <footer className="mt-16 border-t border-stage-resume-100 pt-6 font-mono text-xs uppercase tracking-widest text-stage-resume-500">
         Next.js 15 · Tailwind v4 · Pretendard · @career/design-tokens
       </footer>
     </main>

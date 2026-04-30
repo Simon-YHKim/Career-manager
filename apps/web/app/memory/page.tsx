@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { stages } from "@career/design-tokens";
 import { Card, Tag } from "@/components/ui";
 import { StageHero } from "@/components/StageHero";
 
@@ -88,7 +87,6 @@ const SEED: readonly Memory[] = [
   },
 ];
 
-const palette = stages.memory;
 
 export default function MemoryPage() {
   const [query, setQuery] = useState("");
@@ -125,7 +123,7 @@ export default function MemoryPage() {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="기억을 검색하세요. (예: '협상', 'redis', '면접')"
-          className="w-full rounded-md border border-stage-resume-100 bg-white px-4 py-3 text-sm transition-colors focus-visible:border-stage-memory-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stage-memory-700"
+          className="w-full rounded-md border border-stage-resume-100 bg-white px-4 py-3 text-sm transition-colors focus-visible:border-stage-resume-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stage-resume-700"
           aria-label="메모리 검색"
         />
         <p className="font-mono text-[10px] uppercase tracking-widest text-stage-resume-700">
@@ -142,12 +140,11 @@ export default function MemoryPage() {
               type="button"
               aria-pressed={active}
               onClick={() => toggleSource(s)}
-              className="rounded-full border px-3 py-1 text-xs font-medium transition-colors motion-reduce:transition-none"
-              style={{
-                backgroundColor: active ? palette["500"] : "transparent",
-                borderColor: active ? palette["500"] : palette["100"],
-                color: active ? palette["50"] : palette["900"],
-              }}
+              className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors motion-reduce:transition-none ${
+                active
+                  ? "border-stage-resume-900 bg-stage-resume-900 text-white"
+                  : "border-stage-resume-100 text-stage-resume-700 hover:border-stage-resume-700"
+              }`}
             >
               {sourceLabel[s]}
             </button>
@@ -174,7 +171,7 @@ export default function MemoryPage() {
                 {m.text}
               </p>
               <div className="flex flex-wrap items-baseline gap-2">
-                <Tag stage="memory">{sourceLabel[m.source]}</Tag>
+                <Tag>{sourceLabel[m.source]}</Tag>
                 <span className="font-mono text-[11px] text-stage-resume-700">
                   {m.origin} · {m.date}
                 </span>

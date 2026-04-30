@@ -1,17 +1,15 @@
 import Link from "next/link";
 import { categories, stageLabels, stageSlug } from "@/lib/stages-config";
-import { stages } from "@career/design-tokens";
 import { AuthMenu } from "@/components/AuthMenu";
 
 /**
- * Top navigation. Categories laid out horizontally on desktop, stacked
- * on mobile (no hamburger yet — defer until the route count justifies it).
- *
- * The "로그인" button is a visual placeholder — S2 will wire Supabase Auth.
+ * Top navigation. Monotone — links share the same neutral text token
+ * regardless of the destination stage. Per DESIGN.md v2 (2026-04-29)
+ * the surface no longer color-codes by category.
  */
 export function AppHeader() {
   return (
-    <header className="border-b border-black/5 bg-white">
+    <header className="border-b border-stage-resume-100 bg-white">
       <div className="mx-auto flex max-w-6xl flex-col gap-4 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
         <Link
           href="/"
@@ -26,23 +24,25 @@ export function AppHeader() {
         >
           <Link
             href={`/${stageSlug.todo}`}
-            className="text-stage-todo-700 hover:text-stage-todo-900"
+            className="text-stage-resume-700 hover:text-stage-resume-900"
           >
             {stageLabels.todo.ko}
           </Link>
           <Link
             href={`/${stageSlug.blog}`}
-            className="text-stage-blog-700 hover:text-stage-blog-900"
+            className="text-stage-resume-700 hover:text-stage-resume-900"
           >
             {stageLabels.blog.ko}
           </Link>
-          <span className="hidden h-3 w-px bg-black/10 sm:inline-block" aria-hidden="true" />
+          <span
+            className="hidden h-3 w-px bg-stage-resume-100 sm:inline-block"
+            aria-hidden="true"
+          />
           {categories.map((cat) => (
             <Link
               key={cat.id}
               href={`/#${cat.id}`}
               className="text-stage-resume-700 hover:text-stage-resume-900"
-              style={{ color: stages[cat.anchor]["700"] }}
             >
               {cat.title}
             </Link>

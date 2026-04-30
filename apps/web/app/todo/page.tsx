@@ -82,8 +82,10 @@ const tabs: readonly { key: TabKey; label: string }[] = [
   { key: "all", label: "전체" },
 ];
 
+/** Danger color — DESIGN.md v2 reserves stage palettes for semantic states only. */
+const DANGER = stages.salary;
+
 export default function TodoPage() {
-  const palette = stages.todo;
   const [tab, setTab] = useState<TabKey>("week");
 
   const filtered = useMemo(() => {
@@ -108,12 +110,9 @@ export default function TodoPage() {
     <main className="mx-auto max-w-4xl px-6 py-12">
       <Breadcrumb category={null} current={stageLabels.todo.ko} />
 
-      <header
-        className="mt-6 flex flex-col gap-4 border-l-4 pl-4 sm:flex-row sm:items-center sm:justify-between sm:border-l-0 sm:pl-0"
-        style={{ borderColor: palette["500"] }}
-      >
+      <header className="mt-6 flex flex-col gap-4 border-l-2 border-stage-resume-900 pl-4 sm:flex-row sm:items-center sm:justify-between sm:border-l-0 sm:pl-0">
         <div>
-          <p className="font-mono text-[11px] uppercase tracking-widest" style={{ color: palette["700"] }}>
+          <p className="font-mono text-[11px] uppercase tracking-widest text-stage-resume-700">
             todo · {stageLabels.todo.en}
           </p>
           <h1 className="mt-1 text-3xl font-semibold tracking-tight sm:text-4xl">
@@ -123,12 +122,14 @@ export default function TodoPage() {
             {stageTagline.todo}
           </p>
         </div>
-        <Button variant="primary">
-          + 채용 공고 추가
-        </Button>
+        <Button variant="primary">+ 채용 공고 추가</Button>
       </header>
 
-      <div role="tablist" aria-label="기간 필터" className="mt-8 flex gap-2 border-b border-black/10">
+      <div
+        role="tablist"
+        aria-label="기간 필터"
+        className="mt-8 flex gap-2 border-b border-stage-resume-100"
+      >
         {tabs.map((t) => {
           const active = tab === t.key;
           const count = counts[t.key];
@@ -139,11 +140,11 @@ export default function TodoPage() {
               role="tab"
               aria-selected={active}
               onClick={() => setTab(t.key)}
-              className="-mb-px border-b-2 px-4 py-2 text-sm font-medium transition-colors motion-reduce:transition-none"
-              style={{
-                borderColor: active ? palette["700"] : "transparent",
-                color: active ? palette["900"] : undefined,
-              }}
+              className={`-mb-px border-b-2 px-4 py-2 text-sm font-medium transition-colors motion-reduce:transition-none ${
+                active
+                  ? "border-stage-resume-900 text-stage-resume-900"
+                  : "border-transparent text-stage-resume-700 hover:text-stage-resume-900"
+              }`}
             >
               {t.label}
               <span className="ml-1.5 font-mono text-[10px] opacity-70">{count}</span>
@@ -166,14 +167,21 @@ export default function TodoPage() {
             const days = daysUntil(app.deadline);
             const urgent = days <= 3;
             return (
-              <Card key={app.id} interactive href="#">
+              <Card
+                key={app.id}
+                interactive
+                href="#"
+                className={
+                  urgent ? "border-l-2 border-l-stage-salary-700" : undefined
+                }
+              >
                 <div className="flex items-start justify-between gap-4">
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
                       <p className="text-base font-semibold leading-tight">
                         {app.company} · {app.role}
                       </p>
-                      <Tag stage="todo">{statusLabel[app.status]}</Tag>
+                      <Tag>{statusLabel[app.status]}</Tag>
                     </div>
                     {app.notes && (
                       <p className="mt-1 text-sm text-stage-resume-700">{app.notes}</p>
@@ -182,15 +190,16 @@ export default function TodoPage() {
                   <div className="text-right">
                     <p
                       className="font-mono text-xs uppercase tracking-widest"
-                      style={{ color: urgent ? palette["900"] : palette["700"] }}
+                      style={urgent ? { color: DANGER["700"] } : undefined}
                     >
                       {urgent ? "마감 임박" : "마감"}
                     </p>
                     <p
                       className="mt-0.5 text-lg font-semibold"
-                      style={{ color: urgent ? palette["900"] : "inherit" }}
+                      style={urgent ? { color: DANGER["700"] } : undefined}
                     >
-                      D{days >= 0 ? "-" : "+"}{Math.abs(days)}
+                      D{days >= 0 ? "-" : "+"}
+                      {Math.abs(days)}
                     </p>
                     <p className="font-mono text-[10px] text-stage-resume-700">
                       {app.deadline}

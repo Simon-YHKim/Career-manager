@@ -2,7 +2,6 @@
 
 import { useToast, Button, Card, Tag } from "@/components/ui";
 import { StageHero } from "@/components/StageHero";
-import { stages } from "@career/design-tokens";
 
 type PortfolioItem = {
   id: string;
@@ -61,7 +60,6 @@ const SEED: readonly PortfolioItem[] = [
 
 export default function PortfolioPage() {
   const { show } = useToast();
-  const palette = stages.portfolio;
 
   return (
     <main className="mx-auto max-w-5xl px-6 py-12">
@@ -83,21 +81,18 @@ export default function PortfolioPage() {
         {SEED.map((item) => (
           <Card key={item.id} interactive href={item.url} className="flex h-full flex-col gap-3">
             <div className="flex items-center justify-between gap-2">
-              <Tag stage="portfolio">{kindLabel[item.kind]}</Tag>
+              <Tag>{kindLabel[item.kind]}</Tag>
               <span className="font-mono text-[10px] text-stage-resume-700">
                 {item.year}
               </span>
             </div>
-            <h2
-              className="text-base font-semibold leading-snug"
-              style={{ color: palette["900"] }}
-            >
+            <h2 className="text-base font-semibold leading-snug text-stage-resume-900">
               {item.title}
             </h2>
             <p className="text-sm leading-relaxed text-stage-resume-700">
               {item.description}
             </p>
-            <p className="mt-auto truncate font-mono text-[11px] text-stage-portfolio-700">
+            <p className="mt-auto truncate font-mono text-[11px] text-stage-resume-700">
               ↗ {new URL(item.url).hostname}
             </p>
           </Card>

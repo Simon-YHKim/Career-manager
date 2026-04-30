@@ -2,7 +2,6 @@
 
 import { useToast, Button, Card, Tag } from "@/components/ui";
 import { StageHero } from "@/components/StageHero";
-import { stages } from "@career/design-tokens";
 
 type EvalSession = {
   id: string;
@@ -33,25 +32,29 @@ const SEED: readonly EvalSession[] = [
 ];
 
 function ScoreBar({ score }: { score: number }) {
-  const palette = stages.interviewCoaching;
+  // Monotone: shade ramp by score tier — palette stays neutral.
   const tier = score >= 80 ? "high" : score >= 60 ? "mid" : "low";
-  const color =
-    tier === "high" ? palette["900"] : tier === "mid" ? palette["500"] : palette["100"];
+  const fillClass =
+    tier === "high"
+      ? "bg-stage-resume-900"
+      : tier === "mid"
+        ? "bg-stage-resume-500"
+        : "bg-stage-resume-100";
   return (
     <div className="space-y-1">
       <div className="flex items-baseline justify-between">
         <span className="font-mono text-[11px] uppercase tracking-widest text-stage-resume-700">
           종합 점수
         </span>
-        <span className="font-mono text-2xl font-semibold" style={{ color: palette["900"] }}>
+        <span className="font-mono text-2xl font-semibold text-stage-resume-900">
           {score}
           <span className="text-sm text-stage-resume-700">/100</span>
         </span>
       </div>
       <div className="h-2 w-full overflow-hidden rounded-full bg-stage-resume-100">
         <div
-          className="h-full transition-[width] motion-reduce:transition-none"
-          style={{ width: `${score}%`, backgroundColor: color }}
+          className={`h-full transition-[width] motion-reduce:transition-none ${fillClass}`}
+          style={{ width: `${score}%` }}
         />
       </div>
     </div>
@@ -83,7 +86,7 @@ export default function InterviewEvaluationPage() {
           <Card key={s.id} interactive href="#" className="space-y-4">
             <div className="flex flex-wrap items-baseline justify-between gap-2">
               <p className="text-base font-semibold leading-tight">{s.target}</p>
-              <Tag stage="interviewEvaluation">{s.date}</Tag>
+              <Tag>{s.date}</Tag>
             </div>
             <ScoreBar score={s.score} />
             <div className="grid gap-3 sm:grid-cols-2">
