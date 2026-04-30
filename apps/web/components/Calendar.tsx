@@ -42,7 +42,6 @@ export function Calendar({ month: refMonth, markers = {}, className }: Props) {
   }, [ref]);
 
   const todayIso = toISODate(today);
-  const monthLabel = `${ref.getFullYear()}.${`${ref.getMonth() + 1}`.padStart(2, "0")}`;
 
   return (
     <section
@@ -52,10 +51,7 @@ export function Calendar({ month: refMonth, markers = {}, className }: Props) {
         className,
       )}
     >
-      <header className="mb-3 flex items-baseline justify-between">
-        <p className="font-mono text-2xl font-semibold tracking-tight text-stage-resume-900">
-          {monthLabel}
-        </p>
+      <header className="mb-3 flex items-baseline justify-end">
         <p className="font-mono text-[11px] uppercase tracking-widest text-stage-resume-500">
           ● 마감 ○ 할 일
         </p>
