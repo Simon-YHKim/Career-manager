@@ -87,7 +87,7 @@ export default function EssayPage() {
             type="button"
             aria-pressed={filter === f}
             onClick={() => setFilter(f)}
-            className="rounded-full border border-stage-essay-100 px-3 py-1 text-xs font-medium transition-colors motion-reduce:transition-none data-[active=true]:bg-stage-essay-500 data-[active=true]:text-stage-essay-50"
+            className="rounded-full border border-stage-resume-100 px-3 py-1 text-xs font-medium transition-colors motion-reduce:transition-none data-[active=true]:bg-stage-resume-900 data-[active=true]:text-white"
             data-active={filter === f}
           >
             {filterLabel[f]}
@@ -100,7 +100,7 @@ export default function EssayPage() {
           <Card key={e.id} interactive href="#" className="space-y-2">
             <div className="flex flex-wrap items-baseline justify-between gap-2">
               <p className="text-base font-semibold leading-tight">{e.company}</p>
-              <Tag stage="essay">{statusLabel[e.status]}</Tag>
+              <Tag>{statusLabel[e.status]}</Tag>
             </div>
             <p className="font-mono text-[11px] text-stage-resume-700">
               {e.questions} 문항 · {e.totalChars.toLocaleString()}자 · 수정 {e.updated}

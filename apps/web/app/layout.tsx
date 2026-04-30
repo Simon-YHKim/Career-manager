@@ -47,7 +47,7 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="ko" className={pretendard.variable}>
-      <body className={pretendard.className}>
+      <body className={`${pretendard.className} bg-stage-resume-50 text-stage-resume-900`}>
         <AuthProvider>
           <ToastProvider>
             <AppHeader />

@@ -65,7 +65,7 @@ export default function CareerPage() {
                   {c.company} · {c.period}
                 </p>
               </div>
-              <Tag stage="career">{c.wordCount} 단어</Tag>
+              <Tag>{c.wordCount} 단어</Tag>
             </div>
             <p className="line-clamp-3 text-sm leading-relaxed text-stage-resume-700">
               {c.preview}

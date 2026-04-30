@@ -55,7 +55,7 @@ export default function InterviewCoachingPage() {
           <Card key={s.id} interactive href="#" className="space-y-3">
             <div className="flex flex-wrap items-baseline justify-between gap-2">
               <p className="text-base font-semibold leading-tight">{s.target}</p>
-              <Tag stage="interviewCoaching">{s.questionCount} 문항</Tag>
+              <Tag>{s.questionCount} 문항</Tag>
             </div>
             <p className="text-sm leading-relaxed text-stage-resume-700">
               {s.summary}

@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { stages } from "@career/design-tokens";
 import { stageLabels, stageTagline } from "@/lib/stages-config";
 import { Breadcrumb } from "@/components/Breadcrumb";
 import { Button, Card, Tag } from "@/components/ui";
@@ -102,7 +101,6 @@ const categoryFilters: readonly BlogCategory[] = [
 const PAGE_SIZE = 4;
 
 export default function BlogPage() {
-  const palette = stages.blog;
   const [category, setCategory] = useState<BlogCategory>("all");
   const [page, setPage] = useState(1);
 
@@ -118,8 +116,8 @@ export default function BlogPage() {
     <main className="mx-auto max-w-4xl px-6 py-12">
       <Breadcrumb category={null} current={stageLabels.blog.ko} />
 
-      <header className="mt-6 border-l-4 pl-4" style={{ borderColor: palette["500"] }}>
-        <p className="font-mono text-[11px] uppercase tracking-widest" style={{ color: palette["700"] }}>
+      <header className="mt-6 border-l-2 border-stage-resume-900 pl-4">
+        <p className="font-mono text-[11px] uppercase tracking-widest text-stage-resume-700">
           blog · {stageLabels.blog.en}
         </p>
         <h1 className="mt-1 text-3xl font-semibold tracking-tight sm:text-4xl">
@@ -142,12 +140,11 @@ export default function BlogPage() {
                 setCategory(c);
                 setPage(1);
               }}
-              className="rounded-full border px-3 py-1 text-xs font-medium transition-colors motion-reduce:transition-none"
-              style={{
-                backgroundColor: active ? palette["500"] : "transparent",
-                borderColor: active ? palette["500"] : palette["100"],
-                color: active ? palette["50"] : palette["900"],
-              }}
+              className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors motion-reduce:transition-none ${
+                active
+                  ? "border-stage-resume-900 bg-stage-resume-900 text-white"
+                  : "border-stage-resume-100 text-stage-resume-700 hover:border-stage-resume-700"
+              }`}
             >
               {categoryLabel[c]}
             </button>
@@ -159,7 +156,7 @@ export default function BlogPage() {
         {visible.map((article) => (
           <Card key={article.id} interactive href="#" className="flex h-full flex-col gap-3">
             <div className="flex items-baseline justify-between gap-2">
-              <Tag stage="blog">{categoryLabel[article.category]}</Tag>
+              <Tag>{categoryLabel[article.category]}</Tag>
               <span className="font-mono text-[10px] text-stage-resume-700">
                 {article.readMinutes}분 · {article.publishedAt}
               </span>

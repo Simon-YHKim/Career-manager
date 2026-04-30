@@ -2,7 +2,6 @@
 
 import { useState, type FormEvent } from "react";
 import { Persona, Language } from "@career/schema";
-import { stages } from "@career/design-tokens";
 import { stageLabels, stageTagline, categoryOf } from "@/lib/stages-config";
 import { Breadcrumb } from "@/components/Breadcrumb";
 import {
@@ -32,7 +31,6 @@ const languageOptions: readonly { value: Language; label: string }[] = [
 type TargetJob = { title: string; titleEn: string };
 
 export default function ProfilePage() {
-  const palette = stages.profile;
   const cat = categoryOf("profile");
   const { show } = useToast();
 
@@ -85,14 +83,8 @@ export default function ProfilePage() {
     <main className="mx-auto max-w-3xl px-6 py-12">
       <Breadcrumb category={cat} current={stageLabels.profile.ko} />
 
-      <header
-        className="mt-6 border-l-4 pl-4"
-        style={{ borderColor: palette["500"] }}
-      >
-        <p
-          className="font-mono text-[11px] uppercase tracking-widest"
-          style={{ color: palette["700"] }}
-        >
+      <header className="mt-6 border-l-2 border-stage-resume-900 pl-4">
+        <p className="font-mono text-[11px] uppercase tracking-widest text-stage-resume-700">
           profile · {stageLabels.profile.en}
         </p>
         <h1 className="mt-1 text-3xl font-semibold tracking-tight sm:text-4xl">
@@ -152,12 +144,11 @@ export default function ProfilePage() {
                     type="button"
                     aria-pressed={active}
                     onClick={() => toggleLang(opt.value)}
-                    className="rounded-full border px-3 py-1 text-xs font-medium transition-colors motion-reduce:transition-none"
-                    style={{
-                      backgroundColor: active ? palette["500"] : "transparent",
-                      borderColor: active ? palette["500"] : palette["100"],
-                      color: active ? palette["50"] : palette["900"],
-                    }}
+                    className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors motion-reduce:transition-none ${
+                      active
+                        ? "border-stage-resume-900 bg-stage-resume-900 text-white"
+                        : "border-stage-resume-100 text-stage-resume-700 hover:border-stage-resume-700"
+                    }`}
                   >
                     {opt.label}
                   </button>
@@ -226,7 +217,7 @@ export default function ProfilePage() {
         </Card>
 
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <Tag stage="profile">S2 · Supabase 저장 wiring 대기</Tag>
+          <Tag>S2 · Supabase 저장 wiring 대기</Tag>
           <Button type="submit" variant="primary" size="lg">
             저장
           </Button>

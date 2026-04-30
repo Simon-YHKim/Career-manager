@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { stages } from "@career/design-tokens";
 import { stageLabels, stageTagline, categoryOf } from "@/lib/stages-config";
 import { Breadcrumb } from "@/components/Breadcrumb";
 import {
@@ -50,7 +49,6 @@ function uid(): string {
 }
 
 export default function ExperiencePage() {
-  const palette = stages.experience;
   const cat = categoryOf("experience");
   const { show } = useToast();
 
@@ -124,15 +122,9 @@ export default function ExperiencePage() {
     <main className="mx-auto max-w-3xl px-6 py-12">
       <Breadcrumb category={cat} current={stageLabels.experience.ko} />
 
-      <header
-        className="mt-6 flex flex-col gap-4 border-l-4 pl-4 sm:flex-row sm:items-start sm:justify-between sm:border-l-0 sm:pl-0"
-        style={{ borderColor: palette["500"] }}
-      >
+      <header className="mt-6 flex flex-col gap-4 border-l-2 border-stage-resume-900 pl-4 sm:flex-row sm:items-start sm:justify-between sm:border-l-0 sm:pl-0">
         <div>
-          <p
-            className="font-mono text-[11px] uppercase tracking-widest"
-            style={{ color: palette["700"] }}
-          >
+          <p className="font-mono text-[11px] uppercase tracking-widest text-stage-resume-700">
             experience · {stageLabels.experience.en}
           </p>
           <h1 className="mt-1 text-3xl font-semibold tracking-tight sm:text-4xl">
@@ -273,7 +265,7 @@ export default function ExperiencePage() {
       </section>
 
       <p className="mt-10 text-center font-mono text-[11px] uppercase tracking-widest text-stage-resume-700">
-        <Tag stage="experience">S2 · Supabase 저장 wiring 대기</Tag>
+        <Tag>S2 · Supabase 저장 wiring 대기</Tag>
       </p>
     </main>
   );
