@@ -1,78 +1,23 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { stages } from "@career/design-tokens";
+import Link from "next/link";
 import { stageLabels, stageTagline } from "@/lib/stages-config";
 import { Breadcrumb } from "@/components/Breadcrumb";
-import { Button, Card, Tag } from "@/components/ui";
-
-type ApplicationStatus = "draft" | "applied" | "interview" | "evaluation" | "result";
-
-type Application = {
-  id: string;
-  company: string;
-  role: string;
-  /** ISO date string of the next critical deadline. */
-  deadline: string;
-  status: ApplicationStatus;
-  notes?: string;
-};
-
-const statusLabel: Record<ApplicationStatus, string> = {
-  draft: "지원 준비",
-  applied: "서류 제출",
-  interview: "면접",
-  evaluation: "평가 대기",
-  result: "결과 대기",
-};
-
-/** Mock data — replaces with Supabase query in S20. */
-const MOCK_APPS: readonly Application[] = [
-  {
-    id: "a1",
-    company: "토스",
-    role: "Backend Engineer",
-    deadline: addDaysISO(2),
-    status: "interview",
-    notes: "면접 준비 — coaching 모드 활용",
-  },
-  {
-    id: "a2",
-    company: "네이버",
-    role: "Frontend Engineer",
-    deadline: addDaysISO(5),
-    status: "applied",
-  },
-  {
-    id: "a3",
-    company: "카카오",
-    role: "Platform Engineer",
-    deadline: addDaysISO(10),
-    status: "draft",
-    notes: "자소서 초안 필요",
-  },
-  {
-    id: "a4",
-    company: "당근",
-    role: "Infra Engineer",
-    deadline: addDaysISO(20),
-    status: "draft",
-  },
-];
-
-function addDaysISO(n: number): string {
-  const d = new Date();
-  d.setDate(d.getDate() + n);
-  return d.toISOString().slice(0, 10);
-}
-
-function daysUntil(iso: string): number {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const target = new Date(iso);
-  target.setHours(0, 0, 0, 0);
-  return Math.round((target.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-}
+import { Button, Card, Tag, useToast } from "@/components/ui";
+import {
+  daysUntil,
+  MOCK_APPS,
+  toISODate,
+  type Application,
+} from "@/lib/mock-applications";
+import {
+  phaseLabel,
+  type ApplicationDetail,
+  type Phase,
+} from "@/lib/application-flow";
+import { ApplicationDetailModal } from "@/components/ApplicationDetailModal";
+import { JobAddModal } from "@/components/JobAddModal";
 
 type TabKey = "today" | "week" | "all";
 
@@ -82,29 +27,111 @@ const tabs: readonly { key: TabKey; label: string }[] = [
   { key: "all", label: "전체" },
 ];
 
-/** Danger color — DESIGN.md v2 reserves stage palettes for semantic states only. */
-const DANGER = stages.salary;
+const STATUS_TO_PHASE: Record<Application["status"], Phase> = {
+  draft: "draft",
+  applied: "applied",
+  screening: "applied",
+  interview: "interview_1",
+  evaluation: "interview_1",
+  result: "interview_1_passed",
+  offered: "offered",
+  accepted: "accepted",
+  rejected: "rejected",
+};
+
+function seedDetails(apps: readonly Application[]): Record<string, ApplicationDetail> {
+  const today = toISODate(new Date());
+  const out: Record<string, ApplicationDetail> = {};
+  apps.forEach((a) => {
+    const phase = STATUS_TO_PHASE[a.status];
+    out[a.id] = {
+      id: a.id,
+      currentPhase: phase,
+      milestones: [{ phase, enteredAt: today }],
+      checked: {},
+    };
+  });
+  return out;
+}
 
 export default function TodoPage() {
+  const { show } = useToast();
   const [tab, setTab] = useState<TabKey>("week");
+  const [apps, setApps] = useState<Application[]>([...MOCK_APPS]);
+  const [details, setDetails] = useState<Record<string, ApplicationDetail>>(() =>
+    seedDetails(MOCK_APPS),
+  );
+  const [openDetailFor, setOpenDetailFor] = useState<string | null>(null);
+  const [addOpen, setAddOpen] = useState(false);
 
   const filtered = useMemo(() => {
-    return MOCK_APPS.filter((a) => {
-      const days = daysUntil(a.deadline);
-      if (tab === "today") return days === 0;
-      if (tab === "week") return days >= 0 && days <= 7;
-      return true;
-    }).sort((a, b) => daysUntil(a.deadline) - daysUntil(b.deadline));
-  }, [tab]);
+    return apps
+      .filter((a) => {
+        const days = daysUntil(a.deadline);
+        if (tab === "today") return days === 0;
+        if (tab === "week") return days >= 0 && days <= 7;
+        return true;
+      })
+      .sort((a, b) => daysUntil(a.deadline) - daysUntil(b.deadline));
+  }, [tab, apps]);
 
   const counts = useMemo(() => {
-    const today = MOCK_APPS.filter((a) => daysUntil(a.deadline) === 0).length;
-    const week = MOCK_APPS.filter((a) => {
+    const today = apps.filter((a) => daysUntil(a.deadline) === 0).length;
+    const week = apps.filter((a) => {
       const d = daysUntil(a.deadline);
       return d >= 0 && d <= 7;
     }).length;
-    return { today, week, all: MOCK_APPS.length };
-  }, []);
+    return { today, week, all: apps.length };
+  }, [apps]);
+
+  const activeApp = openDetailFor ? apps.find((a) => a.id === openDetailFor) ?? null : null;
+  const activeDetail = openDetailFor ? details[openDetailFor] ?? null : null;
+
+  function handleAdvance(id: string, next: Phase, date: string) {
+    setDetails((prev) => {
+      const cur = prev[id];
+      if (!cur) return prev;
+      return {
+        ...prev,
+        [id]: {
+          ...cur,
+          currentPhase: next,
+          milestones: [...cur.milestones, { phase: next, enteredAt: date }],
+        },
+      };
+    });
+    show({
+      kind: "info",
+      message: `${phaseLabel[next]} 로 진행됨 — 새 체크리스트가 펼쳐졌습니다.`,
+    });
+  }
+
+  function handleToggle(id: string, key: string) {
+    setDetails((prev) => {
+      const cur = prev[id];
+      if (!cur) return prev;
+      return {
+        ...prev,
+        [id]: {
+          ...cur,
+          checked: { ...cur.checked, [key]: !cur.checked[key] },
+        },
+      };
+    });
+  }
+
+  function handleAdd(app: Application) {
+    setApps((prev) => [app, ...prev]);
+    setDetails((prev) => ({
+      ...prev,
+      [app.id]: {
+        id: app.id,
+        currentPhase: "draft",
+        milestones: [{ phase: "draft", enteredAt: toISODate(new Date()) }],
+        checked: {},
+      },
+    }));
+  }
 
   return (
     <main className="mx-auto max-w-4xl px-6 py-12">
@@ -122,7 +149,17 @@ export default function TodoPage() {
             {stageTagline.todo}
           </p>
         </div>
-        <Button variant="primary">+ 채용 공고 추가</Button>
+        <div className="flex flex-wrap gap-2">
+          <Link
+            href="/jobs/search"
+            className="inline-flex h-10 items-center rounded-md border border-stage-resume-100 bg-white px-4 text-sm font-medium text-stage-resume-900 hover:border-stage-resume-700"
+          >
+            검색으로 추가
+          </Link>
+          <Button variant="primary" onClick={() => setAddOpen(true)}>
+            + 채용 공고 추가
+          </Button>
+        </div>
       </header>
 
       <div
@@ -159,18 +196,20 @@ export default function TodoPage() {
             <p className="text-sm text-stage-resume-700">
               {tab === "today" && "오늘 마감인 공고가 없습니다."}
               {tab === "week" && "이번 주 마감 공고가 없습니다."}
-              {tab === "all" && "등록된 공고가 없습니다. + 버튼으로 추가해 보세요."}
+              {tab === "all" &&
+                "등록된 공고가 없습니다. + 채용 공고 추가 또는 검색으로 추가."}
             </p>
           </Card>
         ) : (
           filtered.map((app) => {
             const days = daysUntil(app.deadline);
             const urgent = days <= 3;
+            const detail = details[app.id];
             return (
               <Card
                 key={app.id}
                 interactive
-                href="#"
+                onClick={() => setOpenDetailFor(app.id)}
                 className={
                   urgent ? "border-l-2 border-l-stage-salary-700" : undefined
                 }
@@ -181,22 +220,26 @@ export default function TodoPage() {
                       <p className="text-base font-semibold leading-tight">
                         {app.company} · {app.role}
                       </p>
-                      <Tag>{statusLabel[app.status]}</Tag>
+                      <Tag>{detail ? phaseLabel[detail.currentPhase] : "-"}</Tag>
                     </div>
                     {app.notes && (
-                      <p className="mt-1 text-sm text-stage-resume-700">{app.notes}</p>
+                      <p className="mt-1 text-sm text-stage-resume-700">
+                        {app.notes}
+                      </p>
                     )}
                   </div>
                   <div className="text-right">
                     <p
-                      className="font-mono text-xs uppercase tracking-widest"
-                      style={urgent ? { color: DANGER["700"] } : undefined}
+                      className={`font-mono text-xs uppercase tracking-widest ${
+                        urgent ? "text-stage-salary-700" : "text-stage-resume-700"
+                      }`}
                     >
                       {urgent ? "마감 임박" : "마감"}
                     </p>
                     <p
-                      className="mt-0.5 text-lg font-semibold"
-                      style={urgent ? { color: DANGER["700"] } : undefined}
+                      className={`mt-0.5 text-lg font-semibold ${
+                        urgent ? "text-stage-salary-700" : ""
+                      }`}
                     >
                       D{days >= 0 ? "-" : "+"}
                       {Math.abs(days)}
@@ -215,6 +258,26 @@ export default function TodoPage() {
       <p className="mt-10 text-center font-mono text-[11px] uppercase tracking-widest text-stage-resume-700">
         S20 에서 Supabase + 캘린더 동기화 + 알람으로 연결됩니다
       </p>
+
+      <ApplicationDetailModal
+        app={activeApp}
+        detail={activeDetail}
+        open={openDetailFor !== null}
+        onClose={() => setOpenDetailFor(null)}
+        onAdvance={(next, date) => {
+          if (openDetailFor) handleAdvance(openDetailFor, next, date);
+        }}
+        onToggleCheck={(key) => {
+          if (openDetailFor) handleToggle(openDetailFor, key);
+        }}
+      />
+
+      <JobAddModal
+        open={addOpen}
+        onClose={() => setAddOpen(false)}
+        onAdd={handleAdd}
+      />
     </main>
   );
 }
+
