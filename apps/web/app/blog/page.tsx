@@ -11,7 +11,9 @@ type BlogCategory =
   | "essay"
   | "interview"
   | "salary"
-  | "career-change";
+  | "career-change"
+  | "market"
+  | "tools";
 
 type Article = {
   id: string;
@@ -29,6 +31,8 @@ const categoryLabel: Record<BlogCategory, string> = {
   interview: "면접",
   salary: "협상",
   "career-change": "이직",
+  market: "시장 동향",
+  tools: "자기 정리",
 };
 
 /** Mock data — replaces with CMS / Astro feed in S17. */
@@ -96,6 +100,8 @@ const categoryFilters: readonly BlogCategory[] = [
   "interview",
   "salary",
   "career-change",
+  "market",
+  "tools",
 ];
 
 const PAGE_SIZE = 4;
@@ -186,8 +192,37 @@ export default function BlogPage() {
         </div>
       )}
 
+      <section
+        aria-label="발행 정책"
+        className="mt-12 rounded-2xl border border-stage-resume-100 bg-white p-5"
+      >
+        <p className="font-mono text-[11px] uppercase tracking-widest text-stage-resume-500">
+          발행 정책 · publishing
+        </p>
+        <h2 className="mt-1 text-lg font-semibold text-stage-resume-900">
+          매주 월요일 새벽 5시, 매일 새벽 5시 (KST)
+        </h2>
+        <ul className="mt-3 space-y-1.5 text-sm leading-relaxed text-stage-resume-700">
+          <li>
+            • 매일 05:00 — 카테고리 1개에 대해 AI가 웹 정보를 모아 본문 1편을 발행합니다.
+          </li>
+          <li>
+            • 매주 월 05:00 — 한 주 발행물 요약 + 시장 동향 한 줄.
+          </li>
+          <li>
+            • 중복 차단 — 임베딩 기반으로 최근 글과 비슷한 주제는 건너뜁니다.
+          </li>
+          <li>
+            • 포화 시 — 채용 시장 뉴스 (정부 정책 · 글로벌 레이오프 · 시장 보고서) 모드로 전환.
+          </li>
+        </ul>
+        <p className="mt-3 font-mono text-[10px] uppercase tracking-widest text-stage-resume-500">
+          상세 spec: docs/specs/blog-content-pipeline.md (S17 · S25 합류 시 활성화)
+        </p>
+      </section>
+
       <p className="mt-10 text-center font-mono text-[11px] uppercase tracking-widest text-stage-resume-700">
-        S17 에서 Astro 블로그 + RSS 로 연결됩니다
+        S17 Astro · S24 pgvector · S25 Cron 으로 점진 활성화
       </p>
     </main>
   );
