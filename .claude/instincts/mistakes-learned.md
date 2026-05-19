@@ -45,3 +45,45 @@
 - **원인**: 검증 로직 = 데이터 가 헷갈림. 스크립트가 아닌 설명 문서에 패턴을 그대로 적으면 해당 문서가 "유출 문서" 가 됨
 - **예방책**: 검증 패턴은 정규식만 (`AQ\.[A-Za-z0-9_-]{20,}`) 혹은 shell 변수로만 표현. 절대 리터럴 prefix 기록 금지
 - **출처**: simon-stack v1 plan 파일
+
+### 2026-04-30 — PR base 가 main 이 아닌 채로 squash merge → cherry-pick 6회 발생
+- **증상**: 초반 PR 들이 다른 feature branch 를 base 로 두고 만들어져 그 위로 후속 PR 이 줄줄이 잘못 쌓임
+- **원인**: `mcp__github__create_pull_request` 호출 시 `base` 누락 / 자동 추정 → 직전 활성 브랜치로 잡힘
+- **예방책**: PR 만들기 전 항상 `git checkout main && git pull origin main && git checkout -b feat/<topic>` 후 생성. 생성 호출 시 `base: "main"` 명시.
+- **출처**: Career-manager · PR #4-#7 cherry-pick → PR #13
+
+### 2026-04-30 — useSearchParams 를 Suspense 없이 사용 → 정적 export 빌드 실패
+- **증상**: `?demo=1` 처리 위해 page.tsx 최상단에 `useSearchParams()` 추가 → "should be wrapped in a suspense boundary"
+- **원인**: 정적 export 환경에서 useSearchParams 는 클라이언트 hydration 필요 → Suspense boundary 강제
+- **예방책**: useSearchParams 쓰는 컴포넌트는 항상 `<Suspense fallback={...}>` 로 감싸기. page.tsx 가 진입점이면 page 자체에 Suspense 두기
+- **출처**: Career-manager · PR #37 demo mode
+
+### 2026-04-30 — Pages 배포 확인 폴링이 HTML grep 만 봐서 안 잡힘
+- **증상**: `curl <pages-url> | grep "<new-string>"` 으로 폴링했는데 새 PR 머지 후에도 false 만 반환
+- **원인**: Next.js 정적 export 의 SSG HTML 에 그 문자열이 없고 JS chunk 에만 있음. curl 은 HTML 만 가져옴.
+- **예방책**: Pages 배포 확인은 (1) HTML 에서 `_next/static/chunks/.../page-*.js` 추출 → (2) 그 chunk 도 fetch → (3) grep
+- **출처**: Career-manager · PR #37, PR #39 배포 폴링
+
+### 2026-04-30 — PR squash merge 후 후속 PR add/add 충돌
+- **증상**: PR #36 머지 직후 PR #37 머지 시도 → add/add conflict (Dashboard.tsx, MarketingLanding.tsx, page.tsx)
+- **원인**: 후속 PR 의 base 가 squash 전 base. squash merge 가 새 SHA 생성하면서 같은 파일이 양쪽에 추가됐다고 인식.
+- **예방책**: 매 PR 머지 직후 `git checkout main && git pull origin main` 하고 다음 PR 시작. 이전 브랜치 위에 또 브랜치 X.
+- **출처**: Career-manager · PR #36 → #37 conflict resolve
+
+### 2026-04-30 — 사용자 페이지에 spec / Sprint 번호 노출 → 사용자 불쾌
+- **증상**: /blog 에 "발행 정책 · docs/specs/blog-content-pipeline.md (S17 · S25 합류)" 카드 노출
+- **사용자 발언**: "발행 정책을 직접적으로 표현하지 마. 사용자들에게 서비스되는 곳에 우리의 개발 과정이 드러날 필요는 없어."
+- **예방책**: Sprint 번호 (S?+) · spec 링크 · "AI 발행 파이프라인" 등 운영 정보는 `docs/specs/*.md` 에만. 사용자 페이지에는 사용자 가치만.
+- **출처**: Career-manager · PR #38 → #39 blog policy hide
+
+### 2026-04-30 — 자동 저장만 두고 명시 저장 버튼 누락
+- **증상**: 리멤버 / LinkedIn 페이지가 onChange 마다 localStorage 저장. UI 상단에 "자동 저장됨" 표시만.
+- **사용자 발언**: "저장하는 버튼이 안 보이네. 저장하는 버튼 만들자."
+- **예방책**: 폼 페이지는 자동 저장이 있어도 명시 저장 버튼 + 토스트 + 마지막 저장 시각 함께 노출. 사용자는 클릭으로 "저장됐다" 를 체감해야 안심.
+- **출처**: Career-manager · 7-request 분기점
+
+### 2026-04-30 — 9건 묶음 요청을 한 PR 로 시도
+- **증상**: 사용자가 한 메시지에 9건 묶어 던졌고 한 PR 로 다 처리하려다 scope 폭주
+- **사용자 발언**: "너무 많으면 나눠서 해"
+- **예방책**: 5 이상의 독립 항목이면 자동 분할. 사용자에게 PR-A/B/C/D 매핑 한 줄로 제시 후 진행. 한 PR 4 항목 이하 권장.
+- **출처**: Career-manager · 9-request 분할

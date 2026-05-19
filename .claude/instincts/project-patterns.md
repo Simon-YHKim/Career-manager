@@ -74,3 +74,27 @@
 - font: Pretendard Variable (CDN: cdn.jsdelivr.net/gh/orioncactus/pretendard)
 - word-break: keep-all
 - 코드: JetBrains Mono
+
+## Career-manager
+
+- **스택**: Next.js 15 App Router + React 19 + Tailwind v4 + shadcn-style (manual, no CLI) + Supabase + Kotlin/Compose Android. pnpm + Turborepo, TypeScript strict + noUncheckedIndexedAccess.
+- **도메인 용어**: 12 stage = `profile · experience · memory · resume · career · essay · portfolio · interviewCoaching · interviewEvaluation · salary · todo · blog`. 카테고리 3개 = 기반(Foundation) · 자료(Artifacts) · 면접(Interview).
+- **데이터 모델 핵심**: CareerProfileMinimal (`packages/schema/src/career-profile.ts`), DocumentBase 13 type (`packages/schema/src/document.ts`), 12-stage 토큰 (`packages/design-tokens/src/stages.ts`).
+- **모노톤 디자인 (DESIGN.md v2)**: Surface 는 `palette.resume` 무채색만. 의미 색만 다른 hue: danger `salary.s700`, success `career.s700`, info `interviewCoaching.s700`. 이모지 X · Inter 폰트 X (한글 Pretendard).
+- **빌드**: `pnpm --filter web build` + `pnpm -r typecheck`. CI = Node (typecheck · build · test) + Android (lint · assembleDebug). 둘 다 green 이어야 머지.
+- **배포**: GitHub Pages 정적 export. URL = `https://simon-yhkim.github.io/Career-manager/` (C 대문자). basePath = `/Career-manager` (env `NEXT_BASE_PATH`).
+- **금기**:
+  - 사용자 페이지에 Sprint 번호 (`S?+`, `S20`) / spec 링크 / "AI 발행 파이프라인" 등 운영 메타 노출 X
+  - 색상 추가 (의미 색 외) X
+  - 카드 중첩 / 다색 / 이모지 아이콘 X
+  - `git push --force` / `--no-verify` / hooks 우회 X
+- **사용자 작업 패턴**:
+  - 한 메시지에 5-9 항목 묶음 던지는 경향. 5+ 이면 자동 분할 + PR-A/B/C/D 라벨로 알리기.
+  - "전부 다 하자" / "모두 진행" / "ㄱㄱ" = 즉시 진행 신호.
+  - 라이브 페이지 확인 후 즉시 다음 요청. PR 분할 적극 활용.
+  - STT 입력 오타 잦음 ("농협" = "내 GitHub", "리멤버" = Remember, "링크데이" = LinkedIn). 문맥 추론으로 진행.
+  - 자동 저장만으로는 불안 — 명시 저장 버튼 + 토스트 항상 필요.
+  - "다른 사람한테 보여줄 거" 발언 시 비로그인 경로 fake-login 까지 확인.
+- **워크플로**: 매 PR 끝나면 `git checkout main && git pull && git checkout -b feat/<next>` 후 다음 PR. 이전 브랜치 위 또 브랜치 X.
+- **라이브 URL 회신 절차**: ① CI green 폴링 → ② merge (squash) → ③ Pages 배포 폴링 (JS chunk grep). 셋 다 끝나야 URL drop.
+- **최근 업데이트**: 2026-04-30
